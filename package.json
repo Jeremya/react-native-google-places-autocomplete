@@ -2,7 +2,7 @@
   "name": "react-native-google-places-autocomplete",
   "version": "1.2.6",
   "description": "Customizable Google Places autocomplete component for iOS and Android React-Native apps",
-  "main": "GooglePlacesAutocomplete.js",
+  "main": "GooglePlacesService.js",
   "scripts": {
     "test": "./node_modules/eslint/bin/eslint.js GooglePlacesAutocomplete.js"
   },

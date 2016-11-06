@@ -33,13 +33,13 @@ let defaultProps = {
       predefinedPlacesAlwaysVisible: false,
       enableEmptySections: true,
       listViewDisplayed: 'auto'
-  }
+  };
 
-let async function getCurrentLocation = (cb) => {
+async function getCurrentLocation() {
     let promise = new Promise(function (resolve, reject) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          resolve({position.coords.latitude, position.coords.longitude});
+          resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
         },
         (error) => {
           reject(error.message);
@@ -51,28 +51,9 @@ let async function getCurrentLocation = (cb) => {
     return promise;
 };
 
-let filterResultsByTypes = (responseJSON, types) => {
-    if (types.length === 0) return responseJSON.results;
+async function requestNearby(configObj, position) {
 
-    var results = [];
-    for (let i = 0; i < responseJSON.results.length; i++) {
-      let found = false;
-      for (let j = 0; j < types.length; j++) {
-        if (responseJSON.results[i].types.indexOf(types[j]) !== -1) {
-          found = true;
-          break;
-        }
-      }
-      if (found === true) {
-        results.push(responseJSON.results[i]);
-      }
-    }
-    return results;
-};
-
-let async function requestNearby = (configObj, position) => {
-
-  let promise = new Promise(function(resolve, reject) => {
+  let promise = new Promise((resolve, reject) => {
 
     if (latitude !== undefined && longitude !== undefined && latitude !== null && longitude !== null) {
       const request = new XMLHttpRequest();
@@ -113,22 +94,17 @@ let async function requestNearby = (configObj, position) => {
   return promise;
 };
 
-let GooglePlacesService = {
-  getNearbyPlaces: (configObj) => {
-    
+export async function getNearbyPlaces(configObj) {
     let config = Object.assign({}, configObj, defaultProps);
-
     let results = [];
+
     try {
       let position = await getCurrentLocation();
       results = await requestNearby(config, position);
     } catch(e) {
-      console.log("ca marche pas", e);
+      throw e;
     }
     
     return results
-  }
+  
 };
-
-
-export default GooglePlacesService;
