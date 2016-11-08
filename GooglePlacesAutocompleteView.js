@@ -61,7 +61,7 @@ const defaultStyles = {
   },
 };
 
-const GooglePlacesAutocomplete = React.createClass({
+const GooglePlacesAutocompleteView = React.createClass({
 
   propTypes: {
     placeholder: React.PropTypes.string,
@@ -432,6 +432,7 @@ const GooglePlacesAutocomplete = React.createClass({
       this._requests.push(request);
       request.timeout = this.props.timeout;
       request.ontimeout = this.props.onTimeout;
+
       request.onreadystatechange = () => {
         if (request.readyState !== 4) {
           return;
@@ -613,19 +614,4 @@ const GooglePlacesAutocomplete = React.createClass({
   },
 });
 
-
-// this function is still present in the library to be retrocompatible with version < 1.1.0
-const create = function create(options = {}) {
-  return React.createClass({
-    render() {
-      return (
-        <GooglePlacesAutocomplete ref="GooglePlacesAutocomplete"
-          {...options}
-        />
-      );
-    },
-  });
-};
-
-
-module.exports = {GooglePlacesAutocomplete, create};
+export default GooglePlacesAutocompleteView;
