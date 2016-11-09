@@ -79,7 +79,7 @@ async function requestNearby(configObj, position) {
   return promise;
 };
 
-export async function getNearbyPlaces(configObj) {
+async function getNearbyPlaces(configObj) {
     let config = Object.assign({}, defaultProps, configObj);
     let results = [];
 
@@ -93,3 +93,5 @@ export async function getNearbyPlaces(configObj) {
     return results
   
 };
+
+export default GooglePlacesService = {getNearbyPlaces}
