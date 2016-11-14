@@ -145,7 +145,7 @@ const GooglePlacesAutocompleteView = React.createClass({
     this.setState({ text: address })
   },
 
-  buildRowsFromResults(results) {
+  buildRowsFromResults(results, searchText = '') {
     var res = null;
 
     if (results.length === 0 || this.props.predefinedPlacesAlwaysVisible === true) {
@@ -154,6 +154,12 @@ const GooglePlacesAutocompleteView = React.createClass({
         res.unshift({
           description: this.props.currentLocationLabel,
           isCurrentLocation: true,
+        });
+      }
+      if (res.length <= 0 && searchText != '') {
+        res.unshift({
+          description: 'Nothing found for query "'+ searchText +'"',
+          isCurrentLocation: false,
         });
       }
     } else {
@@ -308,7 +314,7 @@ const GooglePlacesAutocompleteView = React.createClass({
 
       this.getCurrentLocation();
 
-    } else {
+    } else if (rowData.isPredefinedPlace) {
       this.setState({
         text: rowData.description,
       });
@@ -321,6 +327,17 @@ const GooglePlacesAutocompleteView = React.createClass({
 
       // sending predefinedPlace as details for predefined places
       this.props.onPress(predefinedPlace, predefinedPlace);
+    } else {
+      this.setState({
+        text: rowData.description,
+      });
+
+      this._onBlur();
+
+      delete rowData.isLoading;
+
+      // sending row data!
+      this.props.onPress(rowData);
     }
   },
   _results: [],
@@ -443,7 +460,7 @@ const GooglePlacesAutocompleteView = React.createClass({
             if (this.isMounted()) {
               this._results = responseJSON.predictions;
               this.setState({
-                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(responseJSON.predictions)),
+                dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults(responseJSON.predictions, text)),
               });
             }
           }
@@ -454,12 +471,16 @@ const GooglePlacesAutocompleteView = React.createClass({
           // console.warn("google places autocomplete: request could not be completed or has been aborted");
         }
       };
-      request.open('GET', 'https://maps.googleapis.com/maps/api/place/autocomplete/json?&input=' + encodeURIComponent(text) + '&' + Qs.stringify(this.props.query));
+
+      let url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?&input=' + encodeURIComponent(text) + '&' + Qs.stringify(this.props.query)
+      // console.log("GOING TO SEND REQUEST TO GOOGLE", url);
+
+      request.open('GET', url);
       request.send();
     } else {
       this._results = [];
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults([])),
+        dataSource: this.state.dataSource.cloneWithRows(this.buildRowsFromResults([], text)),
       });
     }
   },
